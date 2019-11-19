@@ -14,21 +14,18 @@ const MovieItem = (props) => {
   const PlatformTouchable = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
 
   const {
-    title, year, rating, genre, runtime, revenue
+    title, year, rating, genre, runtime, revenue, onSelectMovie
   } = props;
 
   return (
     <View style={styles.listItem}>
-      <PlatformTouchable>
+      <PlatformTouchable onPress={onSelectMovie}>
         <View style={styles.container}>
           <View style={styles.headerContainer}>
             <Text style={styles.title}>
               {title}
             </Text>
             <LinearGradient
-              // colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']}
-              // start={{ x: 0.0, y: 1.0 }}
-              // end={{ x: 1.0, y: 1.0 }}
               colors={['#EF0000', '#C651FF', '#6546ED']}
               start={{ x: 1.0, y: 0.0 }}
               end={{ x: 1.0, y: 1.0 }}
@@ -70,7 +67,6 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 5,
     height: 90,
-    borderColor: '#ccc',
     borderRadius: 5,
     elevation: 3,
     overflow:
