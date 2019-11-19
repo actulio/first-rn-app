@@ -29,7 +29,6 @@ const MoviesScreen = (props) => {
     setSearchQuery(query);
   };
 
-
   const renderListItem = (itemData) => (
     <MovieItem
       title={itemData.item.title}
@@ -76,9 +75,7 @@ const MoviesScreen = (props) => {
           </View>
         )}
       />
-
     </View>
-
   );
 };
 

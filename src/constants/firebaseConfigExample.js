@@ -1,10 +1,10 @@
 // rename this file to firebaseConfig.js and add YOUR credentials
 export default {
-  apiKey: '*********',
-  authDomain: '*********',
-  databaseURL: '*********',
-  projectId: '*********',
-  storageBucket: '*********',
-  messagingSenderId: '*********',
-  appId: '*********'
+  apiKey: 'api-key',
+  authDomain: 'project-id.firebaseapp.com',
+  databaseURL: 'https://project-id.firebaseio.com',
+  projectId: 'project-id',
+  storageBucket: 'project-id.appspot.com',
+  messagingSenderId: 'sender-id',
+  appID: 'app-id',
 };

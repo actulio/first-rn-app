@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   View, Text, KeyboardAvoidingView, StyleSheet, FlatList, TextInput, TouchableOpacity
@@ -6,37 +6,66 @@ import {
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Ionicons } from '@expo/vector-icons';
+import firebaseDb from '../constants/firebaseConfig';
+
+
 import Colors from '../constants/Colors';
 
-const MovieCommentsScreen = () => {
-  const [myComment, setMyComment] = useState('');
+const MovieCommentsScreen = (props) => {
+  const [newComment, setNewComment] = useState('');
+  const [comments, setComments] = useState([]);
 
-  const messages = [
-    { id: 1, message: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.' },
-    { id: 2, message: 'alo amor' },
-    { id: 3, message: 'olá belezinha' }];
+  // eslint-disable-next-line react/destructuring-assignment
+  const movieTitle = props.navigation.getParam('movieTitle');
+  const docRef = firebaseDb.doc(`movies/${movieTitle.toLowerCase().replace(/\s/g, '-')}`);
+
+  const resetTimeout = () => {
+    const highestTimeoutId = setTimeout(() => ';');
+    for (let i = 0; i < highestTimeoutId; i += 1) {
+      clearTimeout(i);
+    }
+  };
+
+  useEffect(() => {
+    docRef.get().then((doc) => {
+      resetTimeout();
+      if (doc && doc.exists) {
+        setComments(doc.data().comments);
+      }
+    });
+  }, []);
+
+  const handleSendComment = () => {
+    docRef
+      .set({ comments: [...comments, newComment], })
+      .then(() => { resetTimeout(); console.log('Saved successfully'); })
+      .catch((error) => { console.error('Error adding document: ', error); });
+
+    setComments([...comments, newComment]);
+    setNewComment('');
+  };
 
   const renderMessages = (itemData) => (
     <View style={styles.commentContainer}>
       <View style={styles.thumbnail}>
-        {/* Possible thumbnail here */}
+        {/* Possible avatar here */}
       </View>
       <View style={styles.textContainer}>
-        <Text style={styles.text}>{itemData.item.message}</Text>
+        <Text style={styles.text}>{itemData.item}</Text>
       </View>
     </View>
   );
 
-
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: '#FFF' }}
+      behavior="padding"
+      keyboardVerticalOffset={80}
+      style={{ flex: 1 }}
     >
-      {/* <View> */}
       <View>
         <FlatList
-          data={messages}
-          keyExtractor={(item) => `i-${item.id}`}
+          data={comments}
+          keyExtractor={(item, index) => `i-${index.toString()}`}
           renderItem={renderMessages}
         />
       </View>
@@ -46,23 +75,20 @@ const MovieCommentsScreen = () => {
             style={styles.input}
             placeholder="Your comment here"
             autoCorrect
-            value={myComment}
-            onChangeText={(text) => setMyComment(text)}
+            value={newComment}
+            onChangeText={(text) => setNewComment(text)}
           />
-          <TouchableOpacity style={styles.sendButton}>
+          <TouchableOpacity style={styles.sendButton} onPress={handleSendComment}>
             <Ionicons name="md-send" size={25} color="white" />
           </TouchableOpacity>
         </View>
-
       </View>
-
     </KeyboardAvoidingView>
   );
 };
 
 MovieCommentsScreen.navigationOptions = (navigationData) => {
   const title = navigationData.navigation.getParam('movieTitle');
-
   return {
     headerTitle: title,
   };
