@@ -1,34 +1,35 @@
 import React, { useState, useEffect } from 'react';
 
 import {
-  View, Text, KeyboardAvoidingView, StyleSheet, FlatList, TextInput, TouchableOpacity
+  View,
+  Text,
+  KeyboardAvoidingView,
+  StyleSheet,
+  FlatList,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator
 } from 'react-native';
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Ionicons } from '@expo/vector-icons';
-import firebaseDb from '../constants/firebaseConfig';
-
+import '../../fixTimerBug';
+import firestore from '../constants/firebaseConfig';
 
 import Colors from '../constants/Colors';
 
 const MovieCommentsScreen = (props) => {
   const [newComment, setNewComment] = useState('');
   const [comments, setComments] = useState([]);
+  const [appLoading, setAppLoading] = useState(true);
 
   // eslint-disable-next-line react/destructuring-assignment
   const movieTitle = props.navigation.getParam('movieTitle');
-  const docRef = firebaseDb.doc(`movies/${movieTitle.toLowerCase().replace(/\s/g, '-')}`);
-
-  const resetTimeout = () => {
-    const highestTimeoutId = setTimeout(() => ';');
-    for (let i = 0; i < highestTimeoutId; i += 1) {
-      clearTimeout(i);
-    }
-  };
+  const docRef = firestore.doc(`movies/${movieTitle.toLowerCase().replace(/\s/g, '-')}`);
 
   useEffect(() => {
     docRef.get().then((doc) => {
-      resetTimeout();
+      setAppLoading(false);
       if (doc && doc.exists) {
         setComments(doc.data().comments);
       }
@@ -38,7 +39,7 @@ const MovieCommentsScreen = (props) => {
   const handleSendComment = () => {
     docRef
       .set({ comments: [...comments, newComment], })
-      .then(() => { resetTimeout(); console.log('Saved successfully'); })
+      .then(() => { console.log('Saved successfully'); })
       .catch((error) => { console.error('Error adding document: ', error); });
 
     setComments([...comments, newComment]);
@@ -62,6 +63,15 @@ const MovieCommentsScreen = (props) => {
       keyboardVerticalOffset={80}
       style={{ flex: 1 }}
     >
+      { appLoading && (
+      <ActivityIndicator style={styles.loading} size="large" color={Colors.primaryColor} animating={appLoading} />
+      )}
+      { comments.length === 0 && !appLoading && (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 15, fontWeight: 'bold', color: Colors.primaryColor }}>No comments yet, be the first to add one. </Text>
+      </View>
+      )}
+
       <View>
         <FlatList
           data={comments}
@@ -140,7 +150,11 @@ const styles = StyleSheet.create({
     height: 30,
     width: 30,
     borderRadius: 15
-  }
+  },
+  loading: {
+    flex: 1,
+    alignSelf: 'center'
+  },
 });
 
 export default MovieCommentsScreen;
