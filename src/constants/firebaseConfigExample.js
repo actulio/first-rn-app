@@ -1,5 +1,8 @@
 // rename this file to firebaseConfig.js and add YOUR credentials
-export default {
+import * as firebase from 'firebase';
+import 'firebase/firestore';
+
+const config = {
   apiKey: 'api-key',
   authDomain: 'project-id.firebaseapp.com',
   databaseURL: 'https://project-id.firebaseio.com',
@@ -8,3 +11,8 @@ export default {
   messagingSenderId: 'sender-id',
   appID: 'app-id',
 };
+
+firebase.initializeApp(config);
+const firebaseDb = firebase.firestore();
+
+export default firebaseDb;

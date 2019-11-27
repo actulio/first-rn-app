@@ -1,32 +1,63 @@
 import { Platform } from 'react-native';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
+import { createDrawerNavigator } from 'react-navigation-drawer';
 
 import MoviesScreen from '../screens/MoviesScreen';
-import MovieDetailScreen from '../screens/MovieDetailScreen';
 import MovieCommentsScreen from '../screens/MovieCommentsScreen';
+import FavoritesScreen from '../screens/FavoritesScreen';
 import Colors from '../constants/Colors';
+
+
+const defaultStackNavigationOptions = {
+  headerTitle: 'Movies',
+  headerStyle: {
+    backgroundColor: Platform.OS === 'android' ? Colors.primaryColor : 'blue',
+  },
+  headerTintColor: Platform.OS === 'android' ? 'white' : 'blue',
+};
 
 const MoviesNavigator = createStackNavigator(
   {
-    MovieList: {
-      screen: MoviesScreen
-    },
-    MovieDetail: {
-      screen: MovieDetailScreen
-    },
-    MovieComments: {
-      screen: MovieCommentsScreen
-    }
+    MovieList: MoviesScreen,
+    MovieComments: MovieCommentsScreen
+  }, {
+    defaultNavigationOptions: defaultStackNavigationOptions
+  }
+);
+
+const FavoritesNavigator = createStackNavigator(
+  {
+    Favorites: FavoritesScreen,
+    MovieComments: MovieCommentsScreen,
   }, {
     defaultNavigationOptions: {
-      headerTitle: 'Movies',
-      headerStyle: {
-        backgroundColor: Platform.OS === 'android' ? Colors.primaryColor : 'blue',
-      },
-      headerTintColor: Platform.OS === 'android' ? 'white' : 'blue',
+      ...defaultStackNavigationOptions,
+      headerTitle: 'Favorite Movies'
     }
   }
 );
 
-export default createAppContainer(MoviesNavigator);
+const MainNavigator = createDrawerNavigator(
+  {
+    Movies: {
+      screen: MoviesNavigator,
+      navigationOptions: {
+        drawerLabel: 'Movie List'
+      }
+    },
+    Favorites: {
+      screen: FavoritesNavigator,
+      navigationOptions: {
+        drawerLabel: 'Favorite Movies'
+      }
+    }
+  },
+  {
+    contentOptions: {
+      activeTintColor: Colors.primaryColor,
+    }
+  }
+);
+
+export default createAppContainer(MainNavigator);

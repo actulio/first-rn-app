@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import {
   View,
@@ -13,19 +13,42 @@ import {
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Ionicons } from '@expo/vector-icons';
-import '../../fixTimerBug';
+import { HeaderButtons, Item } from 'react-navigation-header-buttons';
+import { useSelector, useDispatch } from 'react-redux';
 import firestore from '../constants/firebaseConfig';
 
+import MyHeaderButton from '../components/HeaderButton';
 import Colors from '../constants/Colors';
+import { toggleFavorite } from '../store/actions/moviesAction';
+import '../../fixTimerBug';
 
 const MovieCommentsScreen = (props) => {
   const [newComment, setNewComment] = useState('');
   const [comments, setComments] = useState([]);
   const [appLoading, setAppLoading] = useState(true);
 
-  // eslint-disable-next-line react/destructuring-assignment
-  const movieTitle = props.navigation.getParam('movieTitle');
+  const { navigation } = props;
+  const movieRank = navigation.getParam('movieRank');
+  const movieTitle = navigation.getParam('movieTitle');
+  const dispatch = useDispatch();
+
   const docRef = firestore.doc(`movies/${movieTitle.toLowerCase().replace(/\s/g, '-')}`);
+
+  const currentMovieIsFav = useSelector((state) => state.movies.favoriteMovies.some(
+    (movie) => movie.rank === movieRank
+  ));
+
+  const toggleFavoriteHandler = useCallback(() => {
+    dispatch(toggleFavorite(movieRank));
+  }, [dispatch, movieRank]);
+
+  useEffect(() => {
+    props.navigation.setParams({ toggleFav: toggleFavoriteHandler });
+  }, [toggleFavoriteHandler]);
+
+  useEffect(() => {
+    props.navigation.setParams({ isFav: currentMovieIsFav });
+  }, [currentMovieIsFav]);
 
   useEffect(() => {
     docRef.get().then((doc) => {
@@ -99,8 +122,20 @@ const MovieCommentsScreen = (props) => {
 
 MovieCommentsScreen.navigationOptions = (navigationData) => {
   const title = navigationData.navigation.getParam('movieTitle');
+  const toggleFav = navigationData.navigation.getParam('toggleFav');
+  const isFav = navigationData.navigation.getParam('isFav');
+
   return {
     headerTitle: title,
+    headerRight: (
+      <HeaderButtons HeaderButtonComponent={MyHeaderButton}>
+        <Item
+          title="Favorite"
+          iconName={isFav ? 'ios-star' : 'ios-star-outline'}
+          onPress={toggleFav}
+        />
+      </HeaderButtons>
+    )
   };
 };
 

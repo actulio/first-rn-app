@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import {
   View,
@@ -10,10 +9,10 @@ import { useSelector } from 'react-redux';
 import MyHeaderButton from '../components/HeaderButton';
 import MovieList from '../components/MovieList';
 
-
-const MoviesScreen = (props) => {
+const FavoriteScreen = (props) => {
   const { navigation } = props;
-  const movies = useSelector((state) => state.movies.movies);
+
+  const movies = useSelector((state) => state.movies.favoriteMovies);
 
   return (
     <View style={styles.container}>
@@ -22,8 +21,7 @@ const MoviesScreen = (props) => {
   );
 };
 
-
-MoviesScreen.navigationOptions = (navData) => ({
+FavoriteScreen.navigationOptions = (navData) => ({
   headerLeft: (
     <HeaderButtons HeaderButtonComponent={MyHeaderButton}>
       <Item
@@ -43,4 +41,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default MoviesScreen;
+export default FavoriteScreen;
