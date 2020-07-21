@@ -1,6 +1,15 @@
 # Movie List
 
-This is my first ever React Native App. It displays a list of movies fetched from a local JSON and allows the user to add comments to said movies. I'm using [Expo](https://expo.io/) and the commenting backend is powered by Google's [Firebase](https://firebase.google.com/).  
+This is my first ever React Native App. It displays a list of movies fetched from a local JSON and allows the user to add comments to said movies. The user can search for a particular movie and add it to a favorites list.
+I'm using [Expo](https://expo.io/) and the commenting backend is powered by Google's [Firebase](https://firebase.google.com/). It also uses Redux for state management.  
+
+## Screenshots
+
+Some screenshots of how the app is supposed to look, showing the movies list and the comments page:
+
+![List](demo/list.png)
+![Comments](demo/comments.png)
+
 
 ## Prerequisites
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -12,7 +12,17 @@ import MovieList from '../components/MovieList';
 const FavoriteScreen = (props) => {
   const { navigation } = props;
 
+  const [, updateState] = useState();
+  const forceUpdate = useCallback(() => { updateState({}); console.log(movies); }, []);
   const movies = useSelector((state) => state.movies.favoriteMovies);
+
+  useEffect(() => {
+    const willFocusListener = props.navigation.addListener('willFocus', forceUpdate);
+    return () => {
+      willFocusListener.remove();
+    };
+  }, [forceUpdate]);
+
 
   return (
     <View style={styles.container}>
